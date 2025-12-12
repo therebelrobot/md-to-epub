@@ -61,8 +61,10 @@ function configureMarked() {
       }
     },
     renderer(token: any) {
+      // Parse the footnote text as inline markdown to handle links and other formatting
+      const parsedText = marked.parseInline(token.text);
       return `<div class="footnote" id="fn-${token.id}">
-        <sup>${token.id}</sup> ${token.text}
+        <sup>${token.id}</sup> ${parsedText}
       </div>\n`;
     },
   };
