@@ -28,6 +28,13 @@ export interface MarkdownContent {
   title?: string;
 }
 
+export interface ChapterReference {
+  filename: string; // basename without extension
+  fullPath: string; // full path to the file
+  id: string; // chapter ID like "chapter-1"
+  title: string; // chapter title
+}
+
 export interface Chapter {
   title: string;
   html: string;

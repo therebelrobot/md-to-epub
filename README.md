@@ -203,6 +203,7 @@ console.log('Created:', outputFiles);
 - **Emphasis**: *italic*, **bold**, ***bold-italic***
 - **Lists**: Ordered and unordered
 - **Links**: Internal and external
+- **Internal Links (Wikilinks)**: Cross-references between chapters
 - **Images**: Local files (automatically embedded)
 - **Code**: Inline `code` and fenced code blocks
 - **Blockquotes**
@@ -231,6 +232,56 @@ Images are automatically embedded in the EPUB:
 ```
 
 Local image paths are resolved relative to the markdown file.
+
+### Internal Links (Wikilinks)
+
+When converting multiple markdown files into a single EPUB with chapters, you can use wikilink syntax to create cross-references between chapters:
+
+```markdown
+See [[chapter2]] for more details.
+See [[Chapter 2: The Investigation|the investigation]] for more details.
+See [[chapters/chapter2|the analysis]].
+```
+
+**How it works:**
+
+- **`[[target]]`** - Creates a link using the target as both the link and display text
+- **`[[target|display text]]`** - Creates a link to target with custom display text
+
+**Link resolution (Obsidian-style):**
+
+The tool supports multiple matching strategies to find the target chapter:
+1. **Filename match**: `[[chapter2]]` matches `chapter2.md`
+2. **Path match**: `[[chapters/chapter2]]` matches `chapters/chapter2.md`
+3. **Title match**: `[[Chapter 2: The Investigation]]` matches the chapter with that title
+4. **Basename from path**: `[[chapter2]]` matches any file ending with `chapter2.md` regardless of directory
+
+If the target matches an included chapter using any of these strategies, it creates a clickable link. Otherwise, it converts to plain text (just the display text).
+
+**Examples:**
+
+```markdown
+<!-- Links to an included chapter - multiple ways -->
+As discussed in [[chapter1]], we found something unusual.
+Reference [[chapters/chapter2|the data analysis]] from the investigation.
+Continue reading in [[Chapter 3: The Revelation|the final chapter]].
+
+<!-- Links to non-included files become plain text -->
+The [[old research facility]] was closed years ago.
+Consult [[Dr. Williams]] for more information.
+```
+
+In the EPUB output:
+- `[[chapter1]]` → clickable link to Chapter 1 (filename match)
+- `[[chapters/chapter2|the data analysis]]` → clickable link showing "the data analysis" (path match)
+- `[[Chapter 3: The Revelation|the final chapter]]` → clickable link showing "the final chapter" (title match)
+- `[[old research facility]]` → plain text "old research facility"
+- `[[Dr. Williams]]` → plain text "Dr. Williams"
+
+This feature is particularly useful for:
+- Creating a connected narrative across multiple chapters
+- Cross-referencing related content
+- Maintaining wiki-style documentation in EPUB format
 
 ## Output Structure
 

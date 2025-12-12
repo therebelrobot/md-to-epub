@@ -23,6 +23,10 @@ Sarah knew she couldn't do this alone. She reached out to her colleagues:
 
 Together, they would uncover the truth.
 
+The [[Chapter 2: The Investigation|investigation]] would begin immediately. Sarah also made notes about the [[research facility|old research facility]], which was no longer accessible but contained valuable historical data.
+
+They would also need to review [[chapters/chapter2|the data analysis]] from the next phase.
+
 ---
 
 *End of Chapter 1*

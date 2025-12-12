@@ -40,9 +40,13 @@ Dr. Chen stood at the podium, facing cameras from around the world. Her hands tr
 
 The team knew their work had just begun. The signal was only the beginning - a door that had been opened, leading to infinite possibilities.
 
+Looking back at how it all started in [[chapter1]], it seemed almost impossible that they had come this far. The [[chapter2|investigation phase]] had been intense, but it had prepared them for this moment.
+
 As they packed up their equipment that evening, James looked at his colleagues and smiled. "So... what do we do tomorrow?"
 
 Elena laughed. "Tomorrow? We change the world."
+
+They would need to consult the [[historical archives]] and possibly reach out to [[Project Horizon]], another research initiative that had been discontinued.
 
 ---
 

@@ -40,6 +40,10 @@ They faced more questions than answers:
 
 James began writing code to decode the pattern, his fingers flying across the keyboard. Whatever secrets it held, they would soon know.
 
+As detailed in [[chapter1|the previous chapter]], the team had assembled quickly. Now they faced their greatest challenge yet, one that would lead to [[Chapter 3: The Revelation|an earth-shattering revelation]].
+
+Sarah wondered if they should consult with [[Dr. Williams]], an expert who had retired years ago but might have insights on the pattern.
+
 ---
 
 [^1]: The discovery would later be recognized as one of the most significant scientific breakthroughs of the century.

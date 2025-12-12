@@ -3,12 +3,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import mime from 'mime-types';
 import { v4 as uuidv4 } from 'uuid';
-import { MarkdownContent, ImageReference } from './types';
+import { MarkdownContent, ImageReference, ChapterReference } from './types';
 
 // Track images found during parsing
 let parsedImages: ImageReference[] = [];
 let currentBaseDir: string = '';
 let markedConfigured = false;
+// Track available chapters for internal linking
+let availableChapters: ChapterReference[] = [];
 
 // Escape HTML entities helper
 function escapeHtml(text: string): string {
@@ -88,7 +90,71 @@ function configureMarked() {
     },
   };
 
-  marked.use({ extensions: [footnoteExtension, footnoteRefExtension] });
+  // Add wikilink support for internal links [[link|text]] or [[link]]
+  const wikilinkExtension = {
+    name: 'wikilink',
+    level: 'inline' as const,
+    start(src: string) {
+      const match = src.match(/\[\[/);
+      return match?.index;
+    },
+    tokenizer(src: string) {
+      // Match [[target|display]] or [[target]]
+      const match = src.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/);
+      if (match) {
+        return {
+          type: 'wikilink',
+          raw: match[0],
+          target: match[1].trim(),
+          display: match[2]?.trim() || match[1].trim(),
+        };
+      }
+    },
+    renderer(token: any) {
+      const target = token.target;
+      const display = token.display;
+
+      // Normalize the target (remove .md extension if present)
+      const normalizedTarget = target.replace(/\.md$/i, '');
+
+      // Extract basename from target (for path-based links)
+      const targetBasename = path.basename(normalizedTarget);
+
+      // Check if this links to an included chapter using multiple matching strategies:
+      // 1. Exact filename match (without extension)
+      // 2. Basename match from path
+      // 3. Full path match (relative to base directory)
+      // 4. Title match
+      const linkedChapter = availableChapters.find(ch => {
+        const chapterBasename = ch.filename.toLowerCase();
+        const chapterFullPath = ch.fullPath.toLowerCase();
+        const normalizedTargetLower = normalizedTarget.toLowerCase();
+        const targetBasenameLower = targetBasename.toLowerCase();
+
+        return (
+          // Match by filename (e.g., "chapter1")
+          chapterBasename === normalizedTargetLower ||
+          // Match by basename from path (e.g., "chapter1" from "chapters/chapter1")
+          chapterBasename === targetBasenameLower ||
+          // Match by chapter title (e.g., "Chapter 1: The Beginning")
+          ch.title.toLowerCase() === normalizedTargetLower ||
+          // Match by full path (e.g., "chapters/chapter1" or "./chapters/chapter1")
+          chapterFullPath.endsWith(normalizedTargetLower.replace(/^\.\//, '')) ||
+          chapterFullPath === normalizedTargetLower.replace(/^\.\//, '')
+        );
+      });
+
+      if (linkedChapter) {
+        // Create a link to the chapter
+        return `<a href="${linkedChapter.id}.xhtml">${escapeHtml(display)}</a>`;
+      } else {
+        // Link target is not in the EPUB, convert to plain text
+        return escapeHtml(display);
+      }
+    },
+  };
+
+  marked.use({ extensions: [footnoteExtension, footnoteRefExtension, wikilinkExtension] });
   markedConfigured = true;
 }
 
@@ -131,13 +197,17 @@ function extractTitle(markdownText: string): string | undefined {
 /**
  * Parse markdown file and extract content with images
  */
-export async function parseMarkdown(filePath: string): Promise<MarkdownContent> {
+export async function parseMarkdown(
+  filePath: string,
+  chapters?: ChapterReference[]
+): Promise<MarkdownContent> {
   const markdownText = await fs.promises.readFile(filePath, 'utf-8');
   const baseDir = path.dirname(filePath);
 
   // Reset global state
   parsedImages = [];
   currentBaseDir = baseDir;
+  availableChapters = chapters || [];
 
   configureMarked();
 

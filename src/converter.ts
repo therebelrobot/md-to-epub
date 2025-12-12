@@ -3,7 +3,7 @@ import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { parseMarkdown } from './markdown-parser';
 import { generateEpub, generateMultiChapterEpub } from './epub-generator';
-import { Config, EpubMetadata, ConversionOptions, Chapter, ImageReference } from './types';
+import { Config, EpubMetadata, ConversionOptions, Chapter, ImageReference, ChapterReference } from './types';
 
 /**
  * Convert a single markdown file to EPUB
@@ -138,12 +138,28 @@ export async function convertMarkdownFilesToChapters(
   const allImages: ImageReference[] = [];
   const seenImages = new Set<string>();
 
-  // Parse each markdown file
+  // First pass: Build chapter reference list for internal linking
+  const chapterReferences: ChapterReference[] = [];
+  for (let i = 0; i < inputPaths.length; i++) {
+    const inputPath = inputPaths[i];
+    const markdownText = await fs.promises.readFile(inputPath, 'utf-8');
+    const h1Match = markdownText.match(/^#\s+(.+)$/m);
+    const title = h1Match ? h1Match[1] : path.basename(inputPath, path.extname(inputPath));
+
+    chapterReferences.push({
+      filename: path.basename(inputPath, path.extname(inputPath)),
+      fullPath: inputPath,
+      id: `chapter-${i + 1}`,
+      title: title,
+    });
+  }
+
+  // Second pass: Parse each markdown file with chapter context
   for (let i = 0; i < inputPaths.length; i++) {
     const inputPath = inputPaths[i];
     console.log(`Parsing chapter ${i + 1}: ${path.basename(inputPath)}`);
 
-    const { html, images, title } = await parseMarkdown(inputPath);
+    const { html, images, title } = await parseMarkdown(inputPath, chapterReferences);
 
     // Create chapter
     const chapterTitle = title || path.basename(inputPath, path.extname(inputPath));
