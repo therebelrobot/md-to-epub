@@ -20,7 +20,7 @@
     "converter",
     "ebook"
   ],
-  "author": "Aster Haven",
+  "author": "Aster Haven (therebelrobot) <npm@aster.hn>",
   "license": "MIT",
   "dependencies": {
     "archiver": "^7.0.1",
