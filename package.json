@@ -1,0 +1,45 @@
+{
+  "name": "md-to-epub",
+  "version": "1.0.0",
+  "description": "A TypeScript CLI tool to convert markdown files to EPUB format",
+  "main": "dist/index.js",
+  "bin": {
+    "md-to-epub": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "markdown",
+    "epub",
+    "cli",
+    "converter",
+    "ebook"
+  ],
+  "author": "Aster Haven",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "commander": "^12.0.0",
+    "marked": "^12.0.0",
+    "mime-types": "^2.1.35",
+    "rc": "^1.2.8",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/marked": "^6.0.0",
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^20.11.0",
+    "@types/rc": "^1.2.4",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
